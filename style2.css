@@ -6,9 +6,8 @@
 }
 
 /* --- CSS RESET END --- */
-
 html {
-  background-color:rgb(180, 211, 180);
+  background-color: rgb(180, 211, 180);
 }
 
 div.characters {
@@ -16,7 +15,6 @@ div.characters {
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-
   padding: 20px;
 }
 
@@ -42,10 +40,11 @@ div.char img {
 
 div.buttons {
   margin: 0 auto;
+  width: -moz-fit-content;
   width: fit-content;
 }
 
 div.buttons button {
   padding: 12px 20px;
   font-size: 24px;
-}
+}/*# sourceMappingURL=style2.css.map */

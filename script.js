@@ -1,50 +1,56 @@
 const rootElement = document.querySelector("#root")
 
-const fetchUrl = async (url) => {
-  const response = await fetch(url)
-  return response.json()
-}
+const fetchUrl = (url) => fetch(url).then(res => res.json())
 
-const personComponent = (person) => `
-  <div class="person">
-    <h2>${person.name}</h2>
-    <h3>height: ${person.height} cm</h3>
+const skeletonComponent = () => `
+  <div class="characters"></div>
+  <div class="buttons"></div>
+`
+
+const characterComponent = (characterData) => ` 
+  <div class="char">
+    <img src=${characterData.image}>
+    <h2>${characterData.name}</h2>
+    <h3>appears in: ${characterData.episode.length} episodes</h3>
   </div>
 `
 
-const buttonComponent = (text, id) => `<button id=${id}>${text}</button>`
+const buttonComponent = (id, text) => `<button id=${id}>${text}</button>`
 
-const buttonEventComponent = (id, url, rootElement) => {
+const buttonEventComponent = (id, url) => {
   const buttonElement = document.querySelector(`#${id}`)
-  buttonElement.addEventListener("click", async () => {
+  buttonElement.addEventListener("click", () => {
+    console.log(`fetch: ${url}`)
     rootElement.innerHTML = "LOADING..."
-
-    const newData = await fetchUrl(url)
-    makeDomFromData(newData, rootElement)
+    fetchUrl(url).then(data => makeDomFromData(data, rootElement))
   })
 }
 
 const makeDomFromData = (data, rootElement) => {
-  rootElement.innerHTML = ""
+  rootElement.innerHTML = skeletonComponent()
 
-  data.results.forEach((person) => {
-    rootElement.insertAdjacentHTML("beforeend", personComponent(person))
-  })
+  const charactersElement = document.querySelector(".characters")
+  const buttonsElement = document.querySelector(".buttons") 
 
-  if (data.previous) {
-    rootElement.insertAdjacentHTML("beforeend", buttonComponent("previous", "prev"))
-    buttonEventComponent("prev", data.previous, rootElement)
+  const info = data.info
+  const characters = data.results
+
+  characters.forEach(character => charactersElement.insertAdjacentHTML("beforeend", characterComponent(character)))
+
+  if (info.prev) {
+    buttonsElement.insertAdjacentHTML("beforeend", buttonComponent("prev", "previous"))
+    buttonEventComponent("prev", info.prev)
   }
 
-  if (data.next) {
-    rootElement.insertAdjacentHTML("beforeend", buttonComponent("next", "next"))
-    buttonEventComponent("next", data.next, rootElement)
+  if (info.next) {
+    buttonsElement.insertAdjacentHTML("beforeend", buttonComponent("next", "next"))
+    buttonEventComponent("next", info.next)
   }
 }
 
-const init = async () => {
-  const data = await fetchUrl("https://swapi.dev/api/people/")
-  makeDomFromData(data, rootElement)
+const init = () => {
+  rootElement.innerHTML = "LOADING..."
+  fetchUrl("https://rickandmortyapi.com/api/character").then(data => makeDomFromData(data, rootElement))
 }
 
 init()
